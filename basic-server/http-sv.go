@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 )
@@ -35,18 +34,10 @@ func handler(w http.ResponseWriter, r *http.Request){
 	//defer will wait for response till after
 	defer resp.Body.Close() //response could have body, we need to close it as socket wont close
 
-	body, err := io.ReadAll(resp.Body)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	var item todo
 
-	err = json.Unmarshal(body, &item)
 
-	if err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&item); err!= nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
