@@ -6,7 +6,7 @@ import (
 )
 
 func do() int{
-	m := make(chan bool, 1)
+	var m sync.Mutex
 
 	var n int64
 	var w sync.WaitGroup
@@ -14,9 +14,9 @@ func do() int{
 	for i := 0; i < 1000; i++{
 		w.Add(1)
 		go func(){
-			m <- true
+			m.Lock()
 			n++
-			<-m
+			m.Unlock()
 			w.Done()
 		}()
 	}
